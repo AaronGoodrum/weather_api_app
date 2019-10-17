@@ -3,43 +3,21 @@ import Body from "./Component/Body";
 import "./App.css";
 
 const axios = require("axios");
-const wsdot = "http://www.wsdot.wa.gov/Ferries/API/Schedule/rest/routes/";
-const APIAccessCode = "?apiaccesscode=babfc5df-b6f1-42df-b555-c89d6d3f0cb4";
-const TripDate = "2019-10-17";
 
 class App extends React.Component {
+    
   state = {
-    routebriefresponse: [
-      {
-        RouteID: 272,
-        RouteAbbrev: "ana-sj-sid",
-        Description: "Anacortes / San Juan Islands / Sidney B.C.",
-        RegionID: 1,
-        ServiceDisruptions: []
-    },
-    {
-        RouteID: 6,
-        RouteAbbrev: "ed-king",
-        Description: "Edmonds / Kingston",
-        RegionID: 3,
-        ServiceDisruptions: []
-    },
-    {
-      RouteID: 273,
-      RouteAbbrev: "ana-sj-sid",
-      Description: "Anacortes / San Juan Islands / Sidney B.C.",
-      RegionID: 13,
-      ServiceDisruptions: []
-  },
-  {
-      RouteID: 655,
-      RouteAbbrev: "ed-king",
-      Description: "Edmonds / Kingston",
-      RegionID: 34,
-      ServiceDisruptions: []
-  }
-    ]
+    APIAccessCode:"?apiaccesscode=babfc5df-b6f1-42df-b555-c89d6d3f0cb4",
+    TripDate:'2019-10-17',
+    Routes:'routes',
+    routebriefresponse:[]
   };
+
+  addNewData = (newDATA) => {
+    this.setState(prevState =>({
+      routebriefresponse: [...prevState.routebriefresponse, newDATA]
+    }))
+  }
 
   newData = async (data) => {
     data.preventDefault()
@@ -47,17 +25,19 @@ class App extends React.Component {
     console.log("test GET");
     try {
       const resp = await 
-      axios
-          .get(wsdot + TripDate + APIAccessCode)
+      axios.create({
+        baseURL:'https://www.wsdot.wa.gov/Ferries/API/Schedule/rest'
+      })
+          .get(`/${this.state.Routes}/${this.state.TripDate}${this.state.APIAccessCode}`)
           // handle success
-            // this.props.onClick(resp);
-            console.log("get", resp);
+            this.addNewData(resp)
+            console.log("get", resp.data);
             }
     catch (error) {
             // handle error
             console.log(error);
           }
-  };
+  }
 
   render() {
     return (
